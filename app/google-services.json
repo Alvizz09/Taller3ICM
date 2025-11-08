@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "70138650475",
+    "project_id": "taller3icm-32449",
+    "storage_bucket": "taller3icm-32449.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:70138650475:android:647079e406ae4a5d3fb62e",
+        "android_client_info": {
+          "package_name": "com.alviz.talle3icm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBg6CZlmrGpZmUUBqWFJ2PaZ2Zu0V_z7A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
