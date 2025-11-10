@@ -2,6 +2,7 @@ package com.alviz.talle3icm.model
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 
 data class AuthState(
@@ -11,8 +12,7 @@ data class AuthState(
     val lastName: String = "",
     val contactImage: Uri? = null,
     val id: Int? = null,
-    val lat: Double? = null,
-    val lon: Double? = null,
+    val locActual: LatLng? = null
     )
 
 class UserAuthViewModel: ViewModel(){
@@ -38,11 +38,9 @@ class UserAuthViewModel: ViewModel(){
     fun updateId(newId: Int?) {
         _user.value = _user.value.copy(id = newId)
     }
-    fun updateLat(newLat: Double?) {
-        _user.value = _user.value.copy(lat = newLat)
-    }
-    fun updateLon(newLon: Double?) {
-        _user.value = _user.value.copy(lon = newLon)
+    fun updateLocActual(newLoc: LatLng){
+        _user.value= _user.value.copy(locActual=newLoc)
+
     }
 
 }

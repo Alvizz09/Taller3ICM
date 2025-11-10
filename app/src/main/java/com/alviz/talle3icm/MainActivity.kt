@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.alviz.talle3icm.model.LocationViewModel
 import com.alviz.talle3icm.model.UserAuthViewModel
 import com.alviz.talle3icm.navigation.Navigation
 import com.alviz.talle3icm.ui.theme.Talle3ICMTheme
@@ -35,12 +36,10 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("ViewModelConstructorInComposable")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val opts = FirebaseApp.getInstance().options
-        Log.i("FirebaseCheck",
-            "projectId=${opts.projectId}, appId=${opts.applicationId}, storage=${opts.storageBucket}, apiKey=${opts.apiKey}")
+
 
         setContent {
-            Navigation(UserAuthViewModel())
+            Navigation(UserAuthViewModel(), LocationViewModel())
 
         }
     }
