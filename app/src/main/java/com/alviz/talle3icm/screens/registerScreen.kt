@@ -2,16 +2,13 @@ package com.alviz.talle3icm.screens
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,23 +21,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.alviz.talle3icm.components.CustomTextField
 import com.alviz.talle3icm.components.PasswordField
-import com.alviz.talle3icm.database
 import com.alviz.talle3icm.firebaseAuth
 import com.alviz.talle3icm.model.UserAuthViewModel
 import com.alviz.talle3icm.navigation.Screens
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
@@ -96,7 +90,7 @@ fun PantallaRegistro(navController: NavController, model: UserAuthViewModel = vi
 
             Button(
                 onClick = {
-                    registerUser(name, lastName, email, password, navController, context)
+                    registerUser(name, lastName, email, password,navController, context)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

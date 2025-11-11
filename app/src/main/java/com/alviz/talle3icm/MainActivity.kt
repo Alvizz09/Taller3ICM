@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.alviz.talle3icm.model.LocationViewModel
+import com.alviz.talle3icm.model.MyUsersViewModel
 import com.alviz.talle3icm.model.UserAuthViewModel
 import com.alviz.talle3icm.navigation.Navigation
 import com.alviz.talle3icm.ui.theme.Talle3ICMTheme
@@ -39,7 +40,7 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
-            Navigation(UserAuthViewModel(), LocationViewModel())
+            Navigation(UserAuthViewModel(), LocationViewModel(), MyUsersViewModel())
 
         }
     }

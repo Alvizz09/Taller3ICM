@@ -178,13 +178,12 @@ fun PantallaMapa(viewModel: LocationViewModel, userVm: UserAuthViewModel, navCon
     var markers = remember { mutableStateListOf<MyMarker>() }
     val LocActual = LatLng(state.latitude, state.longitude)
     userVm.updateLocActual(LocActual)
-    updateOnlyLocation(LocActual)
     val actualMarkerState = rememberUpdatedMarkerState(position = LocActual)
     val marcadores: MutableList<Location> = loadLocations(context)
 
 
     Scaffold(
-        floatingActionButton = {menuBotones(navController)},
+        floatingActionButton = {menuBotones(navController, userVm)},
         floatingActionButtonPosition = FabPosition.Start
     ) { paddingValues ->
 
@@ -240,17 +239,6 @@ private fun startLocationUpdatesIfGranted(
     }
 }
 
-fun updateOnlyLocation(newLatLng: LatLng) {
-    val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-    val updates = mapOf(
-        "locActual/lat" to newLatLng.latitude,
-        "locActual/lng" to newLatLng.longitude,
-    )
-    FirebaseDatabase.getInstance()
-        .getReference("users")
-        .child(uid)
-        .updateChildren(updates)
-}
 
 fun loadLocations(context: Context): MutableList<Location> {
     val locations = mutableListOf<Location>()
@@ -276,8 +264,9 @@ fun loadLocations(context: Context): MutableList<Location> {
 
 
 @Composable
-fun menuBotones(navController: NavController){
+fun menuBotones(navController: NavController, userVm: UserAuthViewModel){
     var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -285,7 +274,7 @@ fun menuBotones(navController: NavController){
     ) {
         if (expanded) {
             SmallFloatingActionButton(
-                onClick = { /* acción 1 */ },
+                onClick = { navController.navigate(Screens.listaUsers.name) },
                 modifier = Modifier.padding(16.dp),
                 containerColor = Color(0xFF03A9F4),
                 contentColor = Color.White
@@ -295,7 +284,21 @@ fun menuBotones(navController: NavController){
             Spacer(Modifier.height(12.dp))
 
             SmallFloatingActionButton(
-                onClick = { /* acción 2 */ },
+                onClick = { if(userVm.user.value.status == "Disponible"){
+                    userVm.updateStatus("No Disponible")
+
+                    Toast.makeText(
+                        context,
+                        "Ya no estás disponible",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {userVm.updateStatus("Disponible")
+                    Toast.makeText(
+                        context,
+                        "Ahora estás disponible",
+                        Toast.LENGTH_LONG
+                    ).show()}
+                          },
                 modifier = Modifier.padding(16.dp),
                 containerColor = Color(0xFF03A9F4),
                 contentColor = Color.White
@@ -332,17 +335,4 @@ fun menuBotones(navController: NavController){
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AppTopBar(navController: NavController){
-    TopAppBar(
-        title={Text("")},
-        actions = {
-            IconButton(onClick = { firebaseAuth.signOut()
-                navController.navigate(Screens.Login.name){popUpTo(Screens.Login.name){inclusive=true}} },) {
-                Icon(Icons.Filled.ExitToApp, "Log Out")
-            }
-        }
-    )
-}
 
