@@ -5,22 +5,24 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.alviz.talle3icm.model.LocationViewModel
-import com.alviz.talle3icm.model.MyUsersViewModel
+import com.alviz.talle3icm.model.UserAuthViewModel.MyUsersViewModel
 import com.alviz.talle3icm.model.UserAuthViewModel
 import com.alviz.talle3icm.screens.LocationScreen
 import com.alviz.talle3icm.screens.LoginScreen
 import com.alviz.talle3icm.screens.PantallaRegistro
+import com.alviz.talle3icm.screens.ProfileScreen
 import com.alviz.talle3icm.screens.enabledList
 
 enum  class Screens {
     Login,
     Home,
     Register,
-    listaUsers
+    listaUsers,
+    Profile
 }
 
 @Composable
-fun Navigation(userVm: UserAuthViewModel, locVm: LocationViewModel, MyUsersVm: MyUsersViewModel){
+fun Navigation(userVm: UserAuthViewModel, locVm: LocationViewModel, MyUsersVm: UserAuthViewModel.MyUsersViewModel){
     val navController = rememberNavController()
     NavHost(navController =navController, startDestination = Screens.Login.name){
 
@@ -35,6 +37,9 @@ fun Navigation(userVm: UserAuthViewModel, locVm: LocationViewModel, MyUsersVm: M
         }
         composable(route = Screens.listaUsers.name){
             enabledList(navController, MyUsersVm)
+        }
+        composable(route = Screens.Profile.name){
+            ProfileScreen()
         }
 
     }

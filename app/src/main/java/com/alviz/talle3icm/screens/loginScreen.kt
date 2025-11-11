@@ -147,6 +147,7 @@ fun login(email:String, password:String, controller: NavController, context: Con
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
             if(it.isSuccessful){
                 controller.navigate(Screens.Home.name)
+
             }else{
                 onError("Correo o contraseña incorrecta")
             }

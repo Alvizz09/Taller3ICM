@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
@@ -316,6 +317,14 @@ fun menuBotones(navController: NavController, userVm: UserAuthViewModel){
                 contentColor = Color.White
             ) {
                 Icon(Icons.Default.ExitToApp, contentDescription = "Acción 2")
+            }
+            SmallFloatingActionButton(
+                onClick = { navController.navigate(Screens.Profile.name)},
+                modifier = Modifier.padding(16.dp),
+                containerColor = Color(0xFF03A9F4),
+                contentColor = Color.White
+            ) {
+                Icon(Icons.Default.AccountCircle, contentDescription = "Acción 1")
             }
         }
 

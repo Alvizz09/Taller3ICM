@@ -25,7 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.alviz.talle3icm.components.DashboardCard
 import com.alviz.talle3icm.firebaseAuth
-import com.alviz.talle3icm.model.MyUsersViewModel
+import com.alviz.talle3icm.model.UserAuthViewModel.MyUsersViewModel
 import com.alviz.talle3icm.model.UserAuthViewModel
 import com.alviz.talle3icm.navigation.Screens
 import com.google.firebase.auth.FirebaseAuth

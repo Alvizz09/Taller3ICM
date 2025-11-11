@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.alviz.talle3icm.model.LocationViewModel
-import com.alviz.talle3icm.model.MyUsersViewModel
 import com.alviz.talle3icm.model.UserAuthViewModel
 import com.alviz.talle3icm.navigation.Navigation
 import com.alviz.talle3icm.ui.theme.Talle3ICMTheme
@@ -22,6 +21,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.database
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.storage
 
 
 val firebaseAuth = FirebaseAuth.getInstance()
@@ -32,7 +33,6 @@ val database = Firebase.database
 val PATH_USERS = "users/"
 
 
-
 class MainActivity : ComponentActivity() {
     @SuppressLint("ViewModelConstructorInComposable")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +40,9 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
-            Navigation(UserAuthViewModel(), LocationViewModel(), MyUsersViewModel())
+            Navigation(UserAuthViewModel(), LocationViewModel(),
+                UserAuthViewModel.MyUsersViewModel()
+            )
 
         }
     }
