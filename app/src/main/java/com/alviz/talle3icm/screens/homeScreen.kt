@@ -13,25 +13,37 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresPermission
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +55,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -51,10 +64,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.alviz.talle3icm.firebaseAuth
 import com.alviz.talle3icm.model.LocationViewModel
 import com.alviz.talle3icm.model.MyMarker
 import com.alviz.talle3icm.model.UserAuthViewModel
+import com.alviz.talle3icm.navigation.Screens
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -88,7 +103,7 @@ data class Location(val name: String, val latLng: LatLng)
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("ContextCastToActivity")
 @Composable
-fun LocationScreen(locVm: LocationViewModel = viewModel(), userVm: UserAuthViewModel = viewModel()) {
+fun LocationScreen(locVm: LocationViewModel = viewModel(), userVm: UserAuthViewModel = viewModel(), navController: NavController) {
     val context = LocalContext.current
     val LocationPermission = android.Manifest.permission.ACCESS_FINE_LOCATION
     val LocationPermissionState = rememberPermissionState(LocationPermission)
@@ -134,7 +149,7 @@ fun LocationScreen(locVm: LocationViewModel = viewModel(), userVm: UserAuthViewM
     }
 
     if (showScreen){
-        PantallaMapa(locVm, userVm)
+        PantallaMapa(locVm, userVm, navController)
     }
 
     if (showRationale) {
@@ -156,7 +171,7 @@ fun LocationScreen(locVm: LocationViewModel = viewModel(), userVm: UserAuthViewM
 }
 
 @Composable
-fun PantallaMapa(viewModel: LocationViewModel, userVm: UserAuthViewModel) {
+fun PantallaMapa(viewModel: LocationViewModel, userVm: UserAuthViewModel, navController: NavController) {
 
     val context = LocalContext.current
     val state by viewModel.state.collectAsState()
@@ -165,22 +180,12 @@ fun PantallaMapa(viewModel: LocationViewModel, userVm: UserAuthViewModel) {
     userVm.updateLocActual(LocActual)
     updateOnlyLocation(LocActual)
     val actualMarkerState = rememberUpdatedMarkerState(position = LocActual)
-
     val marcadores: MutableList<Location> = loadLocations(context)
 
 
-    Scaffold (
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {  },
-                modifier = Modifier.padding(16.dp),
-                containerColor = Color(0xFF03A9F4),
-                contentColor = Color.White,
-                elevation = FloatingActionButtonDefaults.elevation(6.dp)
-            ) {
-                Icon(Icons.Default.Edit, contentDescription = "Borrar marcadores")
-            }
-        }, floatingActionButtonPosition = FabPosition.Start
+    Scaffold(
+        floatingActionButton = {menuBotones(navController)},
+        floatingActionButtonPosition = FabPosition.Start
     ) { paddingValues ->
 
         val cameraPositionState = key(LocActual) {
@@ -267,5 +272,77 @@ fun loadLocations(context: Context): MutableList<Location> {
         locations.add(Location(name, LatLng(lat, lng)))
     }
     return locations
+}
+
+
+@Composable
+fun menuBotones(navController: NavController){
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(
+        horizontalAlignment = Alignment.Start,
+        modifier = Modifier.padding(16.dp)
+    ) {
+        if (expanded) {
+            SmallFloatingActionButton(
+                onClick = { /* acción 1 */ },
+                modifier = Modifier.padding(16.dp),
+                containerColor = Color(0xFF03A9F4),
+                contentColor = Color.White
+            ) {
+                Icon(Icons.Default.Edit, contentDescription = "Acción 1")
+            }
+            Spacer(Modifier.height(12.dp))
+
+            SmallFloatingActionButton(
+                onClick = { /* acción 2 */ },
+                modifier = Modifier.padding(16.dp),
+                containerColor = Color(0xFF03A9F4),
+                contentColor = Color.White
+            ) {
+                Icon(Icons.Default.Place, contentDescription = "Acción 2")
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            SmallFloatingActionButton(
+                onClick = { firebaseAuth.signOut()
+                    navController.navigate(Screens.Login.name){popUpTo(Screens.Login.name){inclusive=true}} },
+                modifier = Modifier.padding(16.dp),
+                containerColor = Color(0xFF03A9F4),
+                contentColor = Color.White
+            ) {
+                Icon(Icons.Default.ExitToApp, contentDescription = "Acción 2")
+            }
+        }
+
+
+        FloatingActionButton(
+            onClick = { expanded = !expanded },
+            modifier = Modifier.padding(16.dp),
+            containerColor = Color(0xFF03A9F4),
+            contentColor = Color.White,
+            elevation = FloatingActionButtonDefaults.elevation(6.dp)) {
+            Icon(
+                imageVector = if (expanded) Icons.Default.Close else Icons.Default.Add,
+                contentDescription = "Más acciones"
+            )
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppTopBar(navController: NavController){
+    TopAppBar(
+        title={Text("")},
+        actions = {
+            IconButton(onClick = { firebaseAuth.signOut()
+                navController.navigate(Screens.Login.name){popUpTo(Screens.Login.name){inclusive=true}} },) {
+                Icon(Icons.Filled.ExitToApp, "Log Out")
+            }
+        }
+    )
 }
 

@@ -28,7 +28,7 @@ fun Navigation(userVm: UserAuthViewModel, locVm: LocationViewModel){
             PantallaRegistro(navController, userVm)
         }
         composable(route = Screens.Home.name){
-            LocationScreen(locVm)
+            LocationScreen(locVm, userVm, navController)
         }
 
     }
