@@ -65,6 +65,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -79,7 +80,10 @@ import com.google.maps.android.compose.rememberUpdatedMarkerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
+
+data class Location(val name: String, val latLng: LatLng)
 
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("ContextCastToActivity")
@@ -154,21 +158,21 @@ fun LocationScreen(locVm: LocationViewModel = viewModel(), userVm: UserAuthViewM
 @Composable
 fun PantallaMapa(viewModel: LocationViewModel, userVm: UserAuthViewModel) {
 
+    val context = LocalContext.current
     val state by viewModel.state.collectAsState()
-    var routeColor by remember { mutableStateOf(Color(0xFF9E9E9E)) }
     var markers = remember { mutableStateListOf<MyMarker>() }
-    val routePoints = remember { mutableStateListOf<LatLng>() }
     val LocActual = LatLng(state.latitude, state.longitude)
     userVm.updateLocActual(LocActual)
     updateOnlyLocation(LocActual)
     val actualMarkerState = rememberUpdatedMarkerState(position = LocActual)
 
+    val marcadores: MutableList<Location> = loadLocations(context)
 
 
     Scaffold (
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { routeColor = Color(0xFF03A9F4) },
+                onClick = {  },
                 modifier = Modifier.padding(16.dp),
                 containerColor = Color(0xFF03A9F4),
                 contentColor = Color.White,
@@ -203,13 +207,13 @@ fun PantallaMapa(viewModel: LocationViewModel, userVm: UserAuthViewModel) {
                         title = it.title,
                         snippet = it.snippet
                     )
-
-                    if (routePoints.isNotEmpty()) {
-                        Polyline(
-                            points = routePoints.toList(), width = 18f,
-                            color = routeColor,
-                        )
-                    }
+                }
+                marcadores.forEach {
+                    Marker(
+                        state = rememberUpdatedMarkerState(it.latLng),
+                        title = it.name,
+                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+                    )
                 }
             }
         }
@@ -242,3 +246,26 @@ fun updateOnlyLocation(newLatLng: LatLng) {
         .child(uid)
         .updateChildren(updates)
 }
+
+fun loadLocations(context: Context): MutableList<Location> {
+    val locations = mutableListOf<Location>()
+
+    val jsonString = context.assets
+        .open("locations.json")
+        .bufferedReader()
+        .use { it.readText() }
+
+    val json = JSONObject(jsonString)
+    val obj = json.getJSONObject("locations")
+    val keys = obj.keys()
+    while (keys.hasNext()) {
+        val key = keys.next()
+        val item = obj.getJSONObject(key)
+        val name = item.getString("name")
+        val lat = item.getDouble("latitude")
+        val lng = item.getDouble("longitude")
+        locations.add(Location(name, LatLng(lat, lng)))
+    }
+    return locations
+}
+
