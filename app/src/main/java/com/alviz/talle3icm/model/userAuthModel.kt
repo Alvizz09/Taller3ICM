@@ -19,10 +19,10 @@ data class AuthState(
     val password: String = "",
     val name: String = "",
     val lastName: String = "",
-    //val contactImage: String? = null,
+    val contactImage: Uri? = null,
     val id: Int? = null,
-    val lat: Double? = null,
-    val lon: Double? = null,
+    val lat: Double? = 0.0,
+    val lon: Double? = 0.0,
     val status: String = "No Disponible"
     )
 
@@ -47,11 +47,12 @@ class UserAuthViewModel: ViewModel() {
         _user.value = _user.value.copy(lastName = newLastName)
     }
 
-  /*  fun updateContactImage(newContactImage: Uri?) {
-        _user.value = _user.value.copy(contactImage = newContactImage)
-    }
+    /*  fun updateContactImage(newContactImage: Uri?) {
+         _user.value = _user.value.copy(contactImage = newContactImage)
+     }
 
-   */
+    */
+
     fun updateId(newId: Int?) {
         _user.value = _user.value.copy(id = newId)
     }
@@ -90,25 +91,39 @@ class UserAuthViewModel: ViewModel() {
 }
 
 
-    class MyUsersViewModel : ViewModel() {
-        val dbReference = database.getReference("users")
-        val _users = MutableStateFlow(listOf<AuthState>())
-        val users: StateFlow<List<AuthState>> = _users.asStateFlow()
-        var vel: ValueEventListener =
-            dbReference.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    android.util.Log.d("USERS", "childrenCount=${snapshot.childrenCount}")
-                    val updatedList = mutableListOf<AuthState>()
-                    for (child in snapshot.children) {
-                        val user = child.getValue<AuthState>()
-                        user?.let {
-                            updatedList.add(user)
-                        }
-                    }
-                    _users.value = updatedList
-                }
+class MyUsersViewModel : ViewModel() {
+    val dbReference = database.getReference("users")
+    val _users = MutableStateFlow(listOf<AuthState>())
+    val users: StateFlow<List<AuthState>> = _users.asStateFlow()
 
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
+    private fun DataSnapshot.doubleAt(path: String): Double? {
+        val v = child(path).value ?: return null
+        return (v as? Number)?.toDouble() ?: v.toString().toDoubleOrNull()
     }
+
+    var vel: ValueEventListener =
+        dbReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val updatedList = snapshot.children.mapNotNull { c ->
+                    val name = c.child("name").getValue(String::class.java) ?: ""
+                    val lastName = c.child("lastName").getValue(String::class.java) ?: ""
+                    val status = c.child("status").getValue(String::class.java) ?: ""
+
+                    val lat = c.doubleAt("locActual/lat")
+                    val lon = c.doubleAt("locActual/lng")
+
+                    AuthState(
+                        name = name,
+                        lastName = lastName,
+                        status = status,
+                        lat = lat,
+                        lon = lon
+                    )
+                }
+                _users.value = updatedList
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+}

@@ -34,7 +34,7 @@ fun Navigation(userVm: UserAuthViewModel, locVm: LocationViewModel, MyUsersVm: M
             LocationScreen(locVm, userVm, navController)
         }
         composable(route = Screens.listaUsers.name){
-            enabledList(navController, MyUsersVm)
+            enabledList(navController, MyUsersVm, locVm)
         }
 
     }

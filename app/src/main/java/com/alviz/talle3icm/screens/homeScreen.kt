@@ -175,11 +175,12 @@ fun PantallaMapa(viewModel: LocationViewModel, userVm: UserAuthViewModel, navCon
 
     val context = LocalContext.current
     val state by viewModel.state.collectAsState()
-    var markers = remember { mutableStateListOf<MyMarker>() }
+    val markers by viewModel.markers.collectAsState()
     val LocActual = LatLng(state.latitude, state.longitude)
     userVm.updateLocActual(LocActual)
     val actualMarkerState = rememberUpdatedMarkerState(position = LocActual)
-    val marcadores: MutableList<Location> = loadLocations(context)
+    val locations: MutableList<Location> = loadLocations(context)
+    //val otroMarkerState = rememberUpdatedMarkerState(position = locOtro)
 
 
     Scaffold(
@@ -206,13 +207,16 @@ fun PantallaMapa(viewModel: LocationViewModel, userVm: UserAuthViewModel, navCon
                     snippet = "Posición Actual"
                 )
                 markers.forEach {
-                    Marker(
-                        state = rememberUpdatedMarkerState(it.position),
-                        title = it.title,
-                        snippet = it.snippet
-                    )
+                    it.position?.let { position ->
+                        Marker(
+                            state = rememberUpdatedMarkerState(position),
+                            title = it.title,
+                            snippet = it.snippet,
+                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)
+                        )
+                    }
                 }
-                marcadores.forEach {
+                locations.forEach {
                     Marker(
                         state = rememberUpdatedMarkerState(it.latLng),
                         title = it.name,

@@ -1,6 +1,5 @@
 package com.alviz.talle3icm.screens
 
-import android.R.attr.padding
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,14 +24,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.alviz.talle3icm.components.DashboardCard
 import com.alviz.talle3icm.firebaseAuth
+import com.alviz.talle3icm.model.LocationViewModel
+import com.alviz.talle3icm.model.MyMarker
 import com.alviz.talle3icm.model.MyUsersViewModel
-import com.alviz.talle3icm.model.UserAuthViewModel
 import com.alviz.talle3icm.navigation.Screens
-import com.google.firebase.auth.FirebaseAuth
+import com.google.android.gms.maps.model.LatLng
 
 @Composable
 fun enabledList(navcontroller: NavController,
-         viewModel: MyUsersViewModel = viewModel()) {
+         viewModel: MyUsersViewModel = viewModel(), locationVm: LocationViewModel) {
     val users by viewModel.users.collectAsState()
 
     val enabled = remember(users) {
@@ -62,7 +62,17 @@ fun enabledList(navcontroller: NavController,
                                     Text(text = item.lastName)
                                 },
                                 buttonText = "Ver ubicación",
-                                onClick = { })
+                                onClick = {
+                                    if(item.lat == 0.0 || item.lon == 0.0){
+                                        android.util.Log.d("OTRO", "LAT Y LON SON 0")
+                                    }
+                                    val latLng = item.lat?.let { item.lon?.let { longitude -> LatLng(it, longitude) } }
+                                    android.util.Log.d("OTRO", "LOCATION=${item.lat} ${item.lon}")
+                                    val marker = MyMarker(latLng, item.name)
+                                    locationVm.replaceWith(marker)
+                                    navcontroller.navigate(Screens.Home.name) {
+                                    }
+                                })
                         }
                     }
                 }

@@ -5,11 +5,10 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import org.json.JSONObject
-import java.util.Date
+import kotlin.collections.plus
 
 
-data class MyMarker(val position: LatLng, val title: String = "Marker", val snippet: String ="Desc")
+data class MyMarker(val position: LatLng?, val title: String = "Marker", val snippet: String ="Desc")
 
 
 data class LocationState(
@@ -18,9 +17,24 @@ data class LocationState(
 )
 
 class LocationViewModel : ViewModel(){
+
+    private val _markers = MutableStateFlow<List<MyMarker>>(emptyList())
+
+    val markers: StateFlow<List<MyMarker>> = _markers
     private val _uiState = MutableStateFlow(LocationState())
     val state : StateFlow<LocationState> = _uiState
     fun update(lat : Double, long : Double){
         _uiState.update { it.copy(lat, long) }
+    }
+    fun addMarker(m : MyMarker){
+        _markers.value = _markers.value + m
+    }
+
+    fun replaceWith(marker: MyMarker) {
+        _markers.value = listOf(marker)
+    }
+
+    fun clearMarkers() {
+        _markers.value = emptyList()
     }
 }
