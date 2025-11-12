@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -44,13 +45,19 @@ import com.alviz.talle3icm.model.UserAuthViewModel
 fun ProfileScreen(viewModel: UserAuthViewModel = viewModel() ) {
 
     val imageUri by viewModel.contactImageUri.collectAsState()
+    val user by viewModel.user.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadUserData()
+    }
 
     Scaffold() { paddingValues ->
 
         Column(
             modifier = Modifier.padding(paddingValues)
-                        .padding(15.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+                        .padding(30.dp)
+                        .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(15.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -74,6 +81,25 @@ fun ProfileScreen(viewModel: UserAuthViewModel = viewModel() ) {
                         .clip(CircleShape)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
+            } else if(user.contactImageUrl!=null){
+                AsyncImage(
+                    model = user.contactImageUrl,
+                    contentDescription = "imagen de perfil",
+                    modifier = Modifier
+                        .size(150.dp)
+                        .clip(CircleShape)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            } else {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = "Icono de perfil",
+                    modifier = Modifier
+                        .size(150.dp)
+                        .clip(CircleShape)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
             }
 
             Button(onClick = { launcher.launch("image/*") }) {
@@ -94,7 +120,27 @@ fun ProfileScreen(viewModel: UserAuthViewModel = viewModel() ) {
                 }
             }
 
+            Spacer(modifier = Modifier.height(20.dp))
 
+            Text(
+                text = "Nombre: ${user.name}",
+                fontSize = 18.sp
+            )
+            Text(
+                text = "Apellido: ${user.lastName}",
+                fontSize = 18.sp
+            )
+
+
+            Text(
+                text = "Correo: ${user.email}",
+                fontSize = 18.sp
+            )
+
+            Text(
+                text = "Estado: ${user.status}",
+                fontSize = 18.sp
+            )
 
         }
 

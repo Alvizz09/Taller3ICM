@@ -1,6 +1,7 @@
 package com.alviz.talle3icm.model
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.alviz.talle3icm.database
 import com.google.android.gms.maps.model.LatLng
@@ -116,12 +117,34 @@ class UserAuthViewModel: ViewModel() {
     fun updateContactImageUrl(url: String) {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        val updates = mapOf("contactImage" to url)
+        val updates = mapOf("contactImageUrl" to url)
         FirebaseDatabase.getInstance()
             .getReference("users")
             .child(uid)
             .updateChildren(updates)
     }
+
+    fun loadUserData() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        FirebaseDatabase.getInstance()
+            .getReference("users")
+            .child(uid)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val userData = snapshot.getValue(AuthState::class.java)
+                    if (userData != null) {
+                        _user.value = userData
+
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("UserAuthViewModel", "Error al cargar datos: ${error.message}")
+                }
+            })
+    }
+
 
     class MyUsersViewModel : ViewModel() {
         val dbReference = database.getReference("users")
