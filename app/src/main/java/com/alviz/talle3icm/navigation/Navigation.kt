@@ -10,13 +10,15 @@ import com.alviz.talle3icm.model.UserAuthViewModel
 import com.alviz.talle3icm.screens.LocationScreen
 import com.alviz.talle3icm.screens.LoginScreen
 import com.alviz.talle3icm.screens.PantallaRegistro
+import com.alviz.talle3icm.screens.SeguimientoScreen
 import com.alviz.talle3icm.screens.enabledList
 
 enum  class Screens {
     Login,
     Home,
     Register,
-    listaUsers
+    listaUsers,
+    seguimiento
 }
 
 @Composable
@@ -36,6 +38,14 @@ fun Navigation(userVm: UserAuthViewModel, locVm: LocationViewModel, MyUsersVm: M
         composable(route = Screens.listaUsers.name){
             enabledList(navController, MyUsersVm, locVm)
         }
+        composable(
+            route = "seguimiento/{name}/{lat}/{lon}"
+        ) { backStackEntry ->
 
+            val name = backStackEntry.arguments?.getString("name") ?: ""
+            val lat = backStackEntry.arguments?.getString("lat")?.toDouble() ?: 0.0
+            val lon = backStackEntry.arguments?.getString("lon")?.toDouble() ?: 0.0
+            SeguimientoScreen(name, lat, lon, navController)
+        }
     }
 }

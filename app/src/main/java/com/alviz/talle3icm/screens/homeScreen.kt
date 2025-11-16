@@ -4,6 +4,7 @@ import android.Manifest
 import android.R
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -70,6 +71,7 @@ import com.alviz.talle3icm.model.LocationViewModel
 import com.alviz.talle3icm.model.MyMarker
 import com.alviz.talle3icm.model.UserAuthViewModel
 import com.alviz.talle3icm.navigation.Screens
+import com.alviz.talle3icm.notificaciones.UserAvailabilityService
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -105,6 +107,10 @@ data class Location(val name: String, val latLng: LatLng)
 @Composable
 fun LocationScreen(locVm: LocationViewModel = viewModel(), userVm: UserAuthViewModel = viewModel(), navController: NavController) {
     val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        val serviceIntent = Intent(context, UserAvailabilityService::class.java)
+        context.startService(serviceIntent)
+    }
     val LocationPermission = android.Manifest.permission.ACCESS_FINE_LOCATION
     val LocationPermissionState = rememberPermissionState(LocationPermission)
     var showRationale by remember { mutableStateOf(false) }
@@ -319,7 +325,7 @@ fun menuBotones(navController: NavController, userVm: UserAuthViewModel){
                 containerColor = Color(0xFF03A9F4),
                 contentColor = Color.White
             ) {
-                Icon(Icons.Default.ExitToApp, contentDescription = "Acción 2")
+                Icon(Icons.Default.ExitToApp, contentDescription = "Acción 3")
             }
         }
 
