@@ -1,6 +1,7 @@
 package com.alviz.talle3icm.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -22,8 +23,14 @@ enum  class Screens {
 }
 
 @Composable
-fun Navigation(userVm: UserAuthViewModel, locVm: LocationViewModel, MyUsersVm: MyUsersViewModel){
+fun Navigation(userVm: UserAuthViewModel, locVm: LocationViewModel, MyUsersVm: MyUsersViewModel, fromNotification: Boolean = false, notifName: String? = null, notifLat: Double? = null, notifLon: Double? = null){
     val navController = rememberNavController()
+    // Si venimos de notificación va a navegar automáticamente a seguimiento
+    LaunchedEffect(fromNotification) {
+        if (fromNotification && notifLat != null && notifLon != null && notifName != null) {
+            navController.navigate("seguimiento/$notifName/$notifLat/$notifLon")
+        }
+    }
     NavHost(navController =navController, startDestination = Screens.Login.name){
 
         composable(route = Screens.Login.name){
@@ -45,7 +52,7 @@ fun Navigation(userVm: UserAuthViewModel, locVm: LocationViewModel, MyUsersVm: M
             val name = backStackEntry.arguments?.getString("name") ?: ""
             val lat = backStackEntry.arguments?.getString("lat")?.toDouble() ?: 0.0
             val lon = backStackEntry.arguments?.getString("lon")?.toDouble() ?: 0.0
-            SeguimientoScreen(name, lat, lon, navController)
+            SeguimientoScreen(name, lat, lon, navController, locVm)
         }
     }
 }

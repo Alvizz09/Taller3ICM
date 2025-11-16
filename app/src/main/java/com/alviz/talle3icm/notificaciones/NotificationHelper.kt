@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.alviz.talle3icm.MainActivity
 import com.alviz.talle3icm.R
@@ -29,7 +30,7 @@ class NotificationHelper(private val context: Context) {
             val channel = NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
                 "Usuarios disponibles",
-                NotificationManager.IMPORTANCE_HIGH // IMPORTANTE: HIGH para heads-up
+                NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "Notificaciones cuando un usuario se pone disponible"
                 enableLights(true)
@@ -44,6 +45,7 @@ class NotificationHelper(private val context: Context) {
     }
 
     fun showUserAvailableNotification(userName: String, lat: Double, lon: Double) {
+        Log.d("NOTIF", "Notificación enviada con lat=$lat lon=$lon para $userName")
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra(EXTRA_USER_NAME, userName)

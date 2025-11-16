@@ -43,8 +43,21 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+        //Revisar si venimos desde una notificación
+        val fromNotification = intent.getBooleanExtra("from_notification", false)
+        val notifName = intent.getStringExtra("extra_user_name")
+        val notifLat = intent.getStringExtra("extra_user_lat")?.toDoubleOrNull()
+        val notifLon = intent.getStringExtra("extra_user_lon")?.toDoubleOrNull()
         setContent {
-            Navigation(UserAuthViewModel(), LocationViewModel(), MyUsersViewModel())
+            Navigation(
+                UserAuthViewModel(),
+                LocationViewModel(),
+                MyUsersViewModel(),
+                fromNotification = fromNotification,
+                notifName = notifName,
+                notifLat = notifLat,
+                notifLon = notifLon
+            )
 
         }
     }
