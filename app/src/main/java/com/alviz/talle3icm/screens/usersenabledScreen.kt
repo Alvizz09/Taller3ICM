@@ -39,7 +39,7 @@ fun enabledList(navcontroller: NavController,
         users.filter { it.status.trim() == "Disponible" }
     }
 
-    Scaffold(topBar = { AppTopBar(navcontroller) }) { paddingValues ->
+    Scaffold() { paddingValues ->
 
         if (enabled.isEmpty()) {
             Box(
@@ -70,17 +70,5 @@ fun enabledList(navcontroller: NavController,
         }
     }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AppTopBar(navController: NavController){
-    TopAppBar(
-        title={Text("")},
-        actions = {
-            IconButton(onClick = { firebaseAuth.signOut()
-                navController.navigate(Screens.Login.name){popUpTo(Screens.Login.name){inclusive=true}} },) {
-                Icon(Icons.Filled.ExitToApp, "Log Out")
-            }
-        }
-    )
-}
+
 
