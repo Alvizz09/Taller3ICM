@@ -65,7 +65,7 @@ class NotificationHelper(private val context: Context) {
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("Usuario disponible 📍")
+            .setContentTitle("Usuario disponible, checkealo!!📍")
             .setContentText("$userName ahora está disponible")
             .setSmallIcon(R.drawable.notificacion)
             .setAutoCancel(true)
