@@ -39,7 +39,7 @@ fun Navigation(userVm: UserAuthViewModel, locVm: LocationViewModel, MyUsersVm: M
             enabledList(navController, MyUsersVm, locVm)
         }
         composable(
-            route = "seguimiento/{name}/{lat}/{lon}"
+            route = Screens.seguimiento.name
         ) { backStackEntry ->
 
             val name = backStackEntry.arguments?.getString("name") ?: ""
