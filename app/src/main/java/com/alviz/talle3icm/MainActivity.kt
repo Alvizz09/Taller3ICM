@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("ViewModelConstructorInComposable")
     private var notificationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        }
+        } //permiso de la notificacion antes de iniciar sesion xd
     @SuppressLint("ViewModelConstructorInComposable")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 != PackageManager.PERMISSION_GRANTED
             ) {
                 notificationPermissionLauncher.launch(
-                    POST_NOTIFICATIONS
+                    POST_NOTIFICATIONS //permiso de notificacion para mostrar en pantalla
                 )
             }
         }
@@ -48,6 +48,7 @@ class MainActivity : ComponentActivity() {
         val notifName = intent.getStringExtra("extra_user_name")
         val notifLat = intent.getStringExtra("extra_user_lat")?.toDoubleOrNull()
         val notifLon = intent.getStringExtra("extra_user_lon")?.toDoubleOrNull()
+
         setContent {
             Navigation(
                 UserAuthViewModel(),

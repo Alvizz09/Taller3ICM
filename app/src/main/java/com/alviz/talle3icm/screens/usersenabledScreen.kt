@@ -1,5 +1,6 @@
 package com.alviz.talle3icm.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -53,7 +54,7 @@ fun enabledList(navcontroller: NavController,
                 LazyColumn(modifier = Modifier.padding(paddingValues).padding(16.dp)) {
 
                     items(enabled) { item ->
-                        android.util.Log.d("USERS", "infoUSER=${item.name}")
+                        Log.d("USERS", "infoUSER=${item.name}")
                         if (item.status == "Disponible") {
                             DashboardCard(
                                 title = "",
@@ -64,10 +65,10 @@ fun enabledList(navcontroller: NavController,
                                 buttonText = "Ver ubicación",
                                 onClick = {
                                     if(item.lat == 0.0 || item.lon == 0.0){
-                                        android.util.Log.d("OTRO", "LAT Y LON SON 0")
+                                        Log.d("OTRO", "LAT Y LON SON 0")
                                     }
                                     val latLng = item.lat?.let { item.lon?.let { longitude -> LatLng(it, longitude) } }
-                                    android.util.Log.d("OTRO", "LOCATION=${item.lat} ${item.lon}")
+                                        Log.d("OTRO", "LOCATION=${item.lat} ${item.lon}")
                                     val marker = MyMarker(latLng, item.name)
                                     locationVm.replaceWith(marker)
                                     navcontroller.navigate(Screens.Home.name) {

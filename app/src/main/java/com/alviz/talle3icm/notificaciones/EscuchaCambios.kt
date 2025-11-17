@@ -33,27 +33,27 @@ class UserAvailabilityService : Service() {
         return START_STICKY // Para que el servicio se reinicie si se destruye
     }
 
-    override fun onBind(intent: Intent?): IBinder? = null
+    override fun onBind(intent: Intent?): IBinder? = null //// Servicio sin comunicación directa con otras apps
 
     private fun startListeningForAvailabilityChanges() {
         Log.d(TAG, "Iniciando el servicio de escucha de cambios en: users")
 
         childEventListener = object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) { // le mandamos
                 val userId = snapshot.key ?: return
                 val status = snapshot.child("status").getValue(String::class.java) ?: "No Disponible"
-                userStatusMap[userId] = status
-                Log.d(TAG, "Usuario Añadido: $userId, status: '$status'")
+                userStatusMap[userId] = status // Agregamos el usuario a la base de datos
+                Log.d(TAG, "Usuario Añadido: $userId, status: '$status'") //para verificar si se añadio correctamente el usuario a la base de datos
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                val userId = snapshot.key ?: return
+                val userId = snapshot.key ?: return // obtenemos el id del usuario
 
-                Log.d(TAG, "Cambio detectado en usuario: $userId")
+                Log.d(TAG, "Cambio detectado en usuario: $userId") // para debug mio para ver que cambio
 
                 // Ignorar cambios del usuario actual
                 if (userId == currentUserId) {
-                    Log.d(TAG, "Ignorando cambio propio")
+                    Log.d(TAG, "Ignorando cambio propio") // para debug mio para ver que cambio
                     return
                 }
 
@@ -72,12 +72,12 @@ class UserAvailabilityService : Service() {
                     val lon = snapshot.child("locActual/lng").getValue(Double::class.java) ?: 0.0
 
                     sendLocalNotification(
-                        userName = "$userName $lastName".trim(),
+                        userName = "$userName $lastName".trim(), //le mandamos datos del usuario que esta disponible
                         lat = lat,
                         lon = lon
                     )
                 } else {
-                    Log.d(TAG, "Condición NO cumplida")
+                    Log.d(TAG, "Condición NO cumplida") // para debug mio para ver que cambio
                 }
 
                 // Actualizar el estado en el mapa
@@ -87,7 +87,7 @@ class UserAvailabilityService : Service() {
             override fun onChildRemoved(snapshot: DataSnapshot) {
                 val userId = snapshot.key ?: return
                 userStatusMap.remove(userId)
-                Log.d(TAG, "Usuario Removido: $userId")
+                Log.d(TAG, "Usuario Removido: $userId") // para debug mio para ver que cambio
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -95,28 +95,28 @@ class UserAvailabilityService : Service() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, "Error en base de datos: ${error.message}")
+                Log.e(TAG, "Error en base de datos: ${error.message}") // para debug mio para ver que cambio
             }
         }
 
-        usersRef.addChildEventListener(childEventListener!!)
-        Log.d(TAG, "Listener agregado correctamente")
+        usersRef.addChildEventListener(childEventListener!!) // Agregamos el listener a la base de datos pero no lo ejecutamos
+        Log.d(TAG, "Listener agregado correctamente") // para debug mio para ver que cambio
     }
 
     private fun sendLocalNotification(userName: String, lat: Double, lon: Double) {
-        Log.d(TAG, "Enviando notificación para: $userName")
+        Log.d(TAG, "Enviando notificación para: $userName") // para debug mio para ver que cambio
 
         try {
-            val notificationHelper = NotificationHelper(applicationContext)
-            notificationHelper.showUserAvailableNotification(
+            val notificationHelper = NotificationHelper(applicationContext) // Instanciamos la notificacion
+            notificationHelper.showUserAvailableNotification( // mandamos la notificacion
                 userName = userName,
                 lat = lat,
                 lon = lon
             )
-            Log.d(TAG, "Notificación enviada exitosamente")
+            Log.d(TAG, "Notificación enviada exitosamente") // para debug mio para ver que cambio
         } catch (e: Exception) {
             Log.e(TAG, "Error al enviar notificación: ${e.message}")
-            e.printStackTrace()
+            e.printStackTrace() // para debug mio para ver que cambio
         }
     }
 

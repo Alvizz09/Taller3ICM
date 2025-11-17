@@ -18,37 +18,50 @@ enum  class Screens {
     Login,
     Home,
     Register,
-    listaUsers,
-    seguimiento
+    listaUsers
 }
 
 @Composable
-fun Navigation(userVm: UserAuthViewModel, locVm: LocationViewModel, MyUsersVm: MyUsersViewModel, fromNotification: Boolean = false, notifName: String? = null, notifLat: Double? = null, notifLon: Double? = null){
+fun Navigation(
+    userVm: UserAuthViewModel,
+    locVm: LocationViewModel,
+    MyUsersVm: MyUsersViewModel,
+    fromNotification: Boolean = false,
+    notifName: String? = null,
+    notifLat: Double? = null,
+    notifLon: Double? = null
+) {
     val navController = rememberNavController()
-    // Si venimos de notificación va a navegar automáticamente a seguimiento
-    LaunchedEffect(fromNotification) {
-        if (fromNotification && notifLat != null && notifLon != null && notifName != null) {
-            navController.navigate("seguimiento/$notifName/$notifLat/$notifLon")
-        }
-    }
-    NavHost(navController =navController, startDestination = Screens.Login.name){
 
-        composable(route = Screens.Login.name){
+    NavHost(
+        navController = navController,
+        startDestination = Screens.Login.name
+    ) {
+
+        composable(Screens.Login.name) {
             LoginScreen(navController)
+
+            // se Navegar despues de que LoginScreen esté dibujada
+            LaunchedEffect(fromNotification) {
+                if (fromNotification && notifLat != null && notifLon != null && notifName != null) {
+                    navController.navigate("seguimiento/$notifName/$notifLat/$notifLon")
+                }
+            }
         }
-        composable(route = Screens.Register.name){
+
+        composable(Screens.Register.name) {
             PantallaRegistro(navController, userVm)
         }
-        composable(route = Screens.Home.name){
+
+        composable(Screens.Home.name) {
             LocationScreen(locVm, userVm, navController)
         }
-        composable(route = Screens.listaUsers.name){
+
+        composable(Screens.listaUsers.name) {
             enabledList(navController, MyUsersVm, locVm)
         }
-        composable(
-            route = Screens.seguimiento.name
-        ) { backStackEntry ->
 
+        composable("seguimiento/{name}/{lat}/{lon}") { backStackEntry ->
             val name = backStackEntry.arguments?.getString("name") ?: ""
             val lat = backStackEntry.arguments?.getString("lat")?.toDouble() ?: 0.0
             val lon = backStackEntry.arguments?.getString("lon")?.toDouble() ?: 0.0

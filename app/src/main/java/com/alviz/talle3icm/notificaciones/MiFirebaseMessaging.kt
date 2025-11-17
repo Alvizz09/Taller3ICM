@@ -108,6 +108,6 @@ class MiFirebaseMessagingService : FirebaseMessagingService() {
             )
             .build()
 
-        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
+        notificationManager.notify(System.currentTimeMillis().toInt(), notification) // notificacion en el dispositivo
     }
 }
