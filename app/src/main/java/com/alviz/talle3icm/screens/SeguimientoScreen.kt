@@ -66,7 +66,7 @@ fun SeguimientoScreen(
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)
             )
 
-            // Tu propio marcador, si tienes ubicación
+            // Ubi ACTUAL
             if (myLatLng != null) {
                 Marker(
                     state = MarkerState(position = myLatLng),
@@ -74,7 +74,7 @@ fun SeguimientoScreen(
                     snippet = "Mi ubicación actual"
                 )
 
-                // DIBUJAR LA RUTA entre tú y el usuario disponible
+                // DIBUJAR LA RUTA(entre mi ubicación y el usuario disponible)
                 Polyline(
                     points = listOf(myLatLng, target),
                     width = 10f
