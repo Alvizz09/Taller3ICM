@@ -1,7 +1,8 @@
 ﻿# Taller3ICM 
-##Integrantes:
+## Integrantes:
 ### Juan Carlos Correa
 ### Sebastián Sanchez
 ### Juan Sebastián Álvarez
 ### Angy Bautista
+
 
