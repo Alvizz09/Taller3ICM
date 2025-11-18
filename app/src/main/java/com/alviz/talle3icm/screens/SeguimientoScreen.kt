@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Looper
 import android.util.Log
 import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -83,9 +84,39 @@ fun SeguimientoScreen(
         position = CameraPosition.fromLatLngZoom(ubiUser, 16f)
     }
 
+    val currentMiUbi by rememberUpdatedState(miUbi)
+    val currentUbiUser by rememberUpdatedState(ubiUser)
+    val currentSelectedUser by rememberUpdatedState(selectedUser)
+
+    LaunchedEffect(userId) {
+
+        while (true) {
+            val results = FloatArray(1)
+
+            android.location.Location.distanceBetween(
+                currentMiUbi.latitude,
+                currentMiUbi.longitude,
+                currentUbiUser.latitude,
+                currentUbiUser.longitude,
+                results
+            )
+
+            val metros = results[0]
+
+            if (metros > 5f && currentSelectedUser != null) {
+                Toast.makeText(
+                    context,
+                    "Estás a $metros metros de ${currentSelectedUser!!.name}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            kotlinx.coroutines.delay(3000)
+        }
+    }
+
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraState
+        cameraPositionState = cameraState,
     ) {
 
         // UBICACIÓN DEL USUARIO ACTUAL
