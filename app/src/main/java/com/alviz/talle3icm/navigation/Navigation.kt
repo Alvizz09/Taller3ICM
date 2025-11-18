@@ -25,6 +25,7 @@ enum  class Screens {
 fun Navigation(
     userVm: UserAuthViewModel,
     locVm: LocationViewModel,
+    authVm: UserAuthViewModel,
     MyUsersVm: MyUsersViewModel,
     fromNotification: Boolean = false,
     notifName: String? = null,
@@ -32,7 +33,6 @@ fun Navigation(
     notifLon: Double? = null
 ) {
     val navController = rememberNavController()
-
     NavHost(
         navController = navController,
         startDestination = Screens.Login.name
@@ -54,18 +54,18 @@ fun Navigation(
         }
 
         composable(Screens.Home.name) {
-            LocationScreen(locVm, userVm, navController)
+            LocationScreen(locVm, userVm, MyUsersVm,navController)
         }
 
         composable(Screens.listaUsers.name) {
             enabledList(navController, MyUsersVm, locVm)
         }
 
-        composable("seguimiento/{name}/{lat}/{lon}") { backStackEntry ->
+        composable("seguimiento/{name}/{uid}") { backStackEntry ->
             val name = backStackEntry.arguments?.getString("name") ?: ""
-            val lat = backStackEntry.arguments?.getString("lat")?.toDouble() ?: 0.0
-            val lon = backStackEntry.arguments?.getString("lon")?.toDouble() ?: 0.0
-            SeguimientoScreen(name, lat, lon, navController, locVm)
+            val uid = backStackEntry.arguments?.getString("uid") ?: ""
+            SeguimientoScreen(name, uid, navController, locVm, authVm, MyUsersVm)
         }
+
     }
 }

@@ -3,9 +3,7 @@ package com.alviz.talle3icm.screens
 import android.annotation.SuppressLint
 import android.os.Looper
 import android.util.Log
-import android.content.Context
 import android.content.pm.PackageManager
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -13,6 +11,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.core.app.ActivityCompat
 import com.alviz.talle3icm.model.LocationViewModel
+import com.alviz.talle3icm.model.MyUsersViewModel
+import com.alviz.talle3icm.model.UserAuthViewModel
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -23,10 +23,11 @@ import com.google.maps.android.compose.*
 @Composable
 fun SeguimientoScreen(
     name: String,
-    userLat: Double,
-    userLon: Double,
+    userId: String?,
     navController: NavController,
-    locVm: LocationViewModel
+    locVm: LocationViewModel,
+    authVm: UserAuthViewModel,
+    myUsersVm: MyUsersViewModel
 ) {
     val context = LocalContext.current
 
@@ -42,6 +43,9 @@ fun SeguimientoScreen(
                 val loc = result.lastLocation ?: return
                 // Actualiza estado del ViewModel compartido
                 locVm.update(loc.latitude, loc.longitude)
+
+                authVm.updateLocActual(
+                    LatLng(loc.latitude, loc.longitude))
             }
         }
 
@@ -59,8 +63,16 @@ fun SeguimientoScreen(
     val state by locVm.state.collectAsState()
     val miUbi = LatLng(state.latitude, state.longitude)
 
-    // Ubicación del usuario que mandó notificación
-    val ubiUser = LatLng(userLat, userLon)
+    val users by myUsersVm.users.collectAsState()
+
+    val selectedUser = users.firstOrNull { it.id == userId }
+
+    val ubiUser = remember(selectedUser?.lat, selectedUser?.lon) {
+        LatLng(
+            selectedUser?.lat ?: 0.0,
+            selectedUser?.lon ?: 0.0
+        )
+    }
 
     // Logs para verificar que ya no sea Ghana
     Log.d("SEGUI", "Mi ubicación REAL = $miUbi")

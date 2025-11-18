@@ -69,6 +69,7 @@ import androidx.navigation.NavController
 import com.alviz.talle3icm.firebaseAuth
 import com.alviz.talle3icm.model.LocationViewModel
 import com.alviz.talle3icm.model.MyMarker
+import com.alviz.talle3icm.model.MyUsersViewModel
 import com.alviz.talle3icm.model.UserAuthViewModel
 import com.alviz.talle3icm.navigation.Screens
 import com.alviz.talle3icm.notificaciones.UserAvailabilityService
@@ -93,6 +94,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -105,7 +107,7 @@ data class Location(val name: String, val latLng: LatLng)
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("ContextCastToActivity")
 @Composable
-fun LocationScreen(locVm: LocationViewModel = viewModel(), userVm: UserAuthViewModel = viewModel(), navController: NavController) {
+fun LocationScreen(locVm: LocationViewModel = viewModel(), userVm: UserAuthViewModel = viewModel(), usersVm: MyUsersViewModel,navController: NavController) {
     val context = LocalContext.current
     LaunchedEffect(Unit) {
         val serviceIntent = Intent(context, UserAvailabilityService::class.java)
@@ -155,7 +157,7 @@ fun LocationScreen(locVm: LocationViewModel = viewModel(), userVm: UserAuthViewM
     }
 
     if (showScreen){
-        PantallaMapa(locVm, userVm, navController)
+        PantallaMapa(locVm, userVm, usersVm,navController)
     }
 
     if (showRationale) {
@@ -177,7 +179,7 @@ fun LocationScreen(locVm: LocationViewModel = viewModel(), userVm: UserAuthViewM
 }
 
 @Composable
-fun PantallaMapa(viewModel: LocationViewModel, userVm: UserAuthViewModel, navController: NavController) {
+fun PantallaMapa(viewModel: LocationViewModel, userVm: UserAuthViewModel, usersVm: MyUsersViewModel, navController: NavController) {
 
     val context = LocalContext.current
     val state by viewModel.state.collectAsState()
@@ -186,7 +188,6 @@ fun PantallaMapa(viewModel: LocationViewModel, userVm: UserAuthViewModel, navCon
     userVm.updateLocActual(LocActual)
     val actualMarkerState = rememberUpdatedMarkerState(position = LocActual)
     val locations: MutableList<Location> = loadLocations(context)
-    //val otroMarkerState = rememberUpdatedMarkerState(position = locOtro)
 
 
     Scaffold(
@@ -212,16 +213,7 @@ fun PantallaMapa(viewModel: LocationViewModel, userVm: UserAuthViewModel, navCon
                     title = "Actual",
                     snippet = "Posición Actual"
                 )
-                markers.forEach {
-                    it.position?.let { position ->
-                        Marker(
-                            state = rememberUpdatedMarkerState(position),
-                            title = it.title,
-                            snippet = it.snippet,
-                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)
-                        )
-                    }
-                }
+
                 locations.forEach {
                     Marker(
                         state = rememberUpdatedMarkerState(it.latLng),

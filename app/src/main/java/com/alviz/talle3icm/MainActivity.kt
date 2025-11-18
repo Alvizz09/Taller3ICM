@@ -53,6 +53,7 @@ class MainActivity : ComponentActivity() {
             Navigation(
                 UserAuthViewModel(),
                 LocationViewModel(),
+                UserAuthViewModel(),
                 MyUsersViewModel(),
                 fromNotification = fromNotification,
                 notifName = notifName,

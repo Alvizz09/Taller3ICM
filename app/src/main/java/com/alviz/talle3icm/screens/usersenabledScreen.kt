@@ -35,7 +35,6 @@ import com.google.android.gms.maps.model.LatLng
 fun enabledList(navcontroller: NavController,
          viewModel: MyUsersViewModel = viewModel(), locationVm: LocationViewModel) {
     val users by viewModel.users.collectAsState()
-
     val enabled = remember(users) {
         users.filter { it.status.trim() == "Disponible" }
     }
@@ -71,8 +70,7 @@ fun enabledList(navcontroller: NavController,
                                         Log.d("OTRO", "LOCATION=${item.lat} ${item.lon}")
                                     val marker = MyMarker(latLng, item.name)
                                     locationVm.replaceWith(marker)
-                                    navcontroller.navigate(Screens.Home.name) {
-                                    }
+                                    navcontroller.navigate("seguimiento/${item.name}/${item.id}")
                                 })
                         }
                     }

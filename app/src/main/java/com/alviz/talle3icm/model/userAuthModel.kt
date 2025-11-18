@@ -20,7 +20,7 @@ data class AuthState(
     val name: String = "",
     val lastName: String = "",
     val contactImage: Uri? = null,
-    val id: Int? = null,
+    val id: String? = null,
     val lat: Double? = 0.0,
     val lon: Double? = 0.0,
     val status: String = "No Disponible"
@@ -53,9 +53,6 @@ class UserAuthViewModel: ViewModel() {
 
     */
 
-    fun updateId(newId: Int?) {
-        _user.value = _user.value.copy(id = newId)
-    }
 
     fun updateLocActual(newLoc: LatLng) {
         _user.value = _user.value.copy(
@@ -105,6 +102,9 @@ class MyUsersViewModel : ViewModel() {
         dbReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val updatedList = snapshot.children.mapNotNull { c ->
+
+                    val uid = c.key ?: return@mapNotNull null
+
                     val name = c.child("name").getValue(String::class.java) ?: ""
                     val lastName = c.child("lastName").getValue(String::class.java) ?: ""
                     val status = c.child("status").getValue(String::class.java) ?: ""
@@ -113,6 +113,7 @@ class MyUsersViewModel : ViewModel() {
                     val lon = c.doubleAt("locActual/lng")
 
                     AuthState(
+                        id = uid,
                         name = name,
                         lastName = lastName,
                         status = status,
