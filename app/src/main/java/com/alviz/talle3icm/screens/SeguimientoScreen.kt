@@ -82,7 +82,6 @@ fun SeguimientoScreen(
     val cameraState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(ubiUser, 16f)
     }
-
     val currentMiUbi by rememberUpdatedState(miUbi)
     val currentUbiUser by rememberUpdatedState(ubiUser)
     val currentSelectedUser by rememberUpdatedState(selectedUser)
@@ -115,7 +114,7 @@ fun SeguimientoScreen(
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraState,
+        cameraPositionState = cameraState
     ) {
 
         // UBICACIÓN DEL USUARIO ACTUAL
