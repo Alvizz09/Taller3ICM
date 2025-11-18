@@ -70,8 +70,6 @@ class UserAvailabilityService : Service() {
                     val lastName = snapshot.child("lastName").getValue(String::class.java) ?: ""
                     val lat = snapshot.child("locActual/lat").getValue(Double::class.java) ?: 0.0
                     val lon = snapshot.child("locActual/lng").getValue(Double::class.java) ?: 0.0
-
-                    // 👇 CAMBIO: ahora también le pasamos el userId al método de notificación
                     sendLocalNotification(
                         userId = userId,
                         userName = "$userName $lastName".trim(), //le mandamos datos del usuario que esta disponible

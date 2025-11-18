@@ -46,21 +46,16 @@ class NotificationHelper(private val context: Context) {
         }
     }
 
-    // 👇 CAMBIO: ahora también recibe userId
     fun showUserAvailableNotification(userId: String, userName: String, lat: Double, lon: Double) {
         Log.d("NOTIF", "Notificación enviada con lat=$lat lon=$lon para $userName (uid=$userId)")
 
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
 
-            // Estos extras siguen estando por si los necesitas en otro lado
             putExtra(EXTRA_USER_NAME, userName)
             putExtra(EXTRA_USER_LAT, lat.toString())
             putExtra(EXTRA_USER_LON, lon.toString())
-
-            // 👇 NUEVO: pasamos también el UID, para navegar a seguimiento/{name}/{uid}
             putExtra(EXTRA_USER_UID, userId)
-
             putExtra("from_notification", true)
         }
 

@@ -24,8 +24,6 @@ class MiFirebaseMessagingService : FirebaseMessagingService() {
         const val EXTRA_USER_NAME = "extra_user_name"
         const val EXTRA_USER_LAT = "extra_user_lat"
         const val EXTRA_USER_LON = "extra_user_lon"
-
-        // 👇 NUEVO: uid del usuario y ruta directa para Navigation
         const val EXTRA_USER_UID = "extra_user_uid"
         const val EXTRA_ROUTE = "route"
     }
@@ -43,16 +41,11 @@ class MiFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         Log.d(TAG, "Mensaje recibido de: ${message.from}")
-
         val data = message.data
-
-        // Estos nombres de clave DEBEN coincidir con lo que mandas desde tu backend/Firebase
         val userName = data["userName"] ?: "Usuario"
         val userLat = data["userLat"] ?: "0.0"
         val userLon = data["userLon"] ?: "0.0"
-
-        // 👇 IMPORTANTE: ahora también leemos el UID del usuario disponible
-        val userUid = data["userUid"] ?: ""   // Asegúrate de mandar "userUid" en el payload
+        val userUid = data["userUid"] ?: ""
 
         showNotification(
             title = "Usuario Disponible",
@@ -84,7 +77,6 @@ class MiFirebaseMessagingService : FirebaseMessagingService() {
         }
     }
 
-    // 👇 CAMBIADO: ahora recibe también userUid
     private fun showNotification(
         title: String,
         message: String,
@@ -93,18 +85,13 @@ class MiFirebaseMessagingService : FirebaseMessagingService() {
         lat: String,
         lon: String
     ) {
-        // Ruta que COINCIDE con tu NavHost: "seguimiento/{name}/{uid}"
         val route = "seguimiento/${Uri.encode(userName)}/$userUid"
 
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-
-            // Extras que ya tenías (por si los sigues usando en otras partes)
             putExtra(EXTRA_USER_NAME, userName)
             putExtra(EXTRA_USER_LAT, lat)
             putExtra(EXTRA_USER_LON, lon)
-
-            // 👇 NUEVO: uid y route correcta para Navigation
             putExtra(EXTRA_USER_UID, userUid)
             putExtra(EXTRA_ROUTE, route)
 

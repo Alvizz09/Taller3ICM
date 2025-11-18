@@ -57,9 +57,8 @@ fun SeguimientoScreen(
             client.requestLocationUpdates(request, callback, Looper.getMainLooper())
         }
     }
-    // ---------------------------------------------------------------------------------------
 
-    // Se obtiene la ubicación REAL desde el mismo ViewModel que usa PantallaMapa
+    // Se obtiene la ubicación actual desde el mismo ViewModel que usa PantallaMapa
     val state by locVm.state.collectAsState()
     val miUbi = LatLng(state.latitude, state.longitude)
 
@@ -74,7 +73,7 @@ fun SeguimientoScreen(
         )
     }
 
-    // Logs para verificar que ya no sea Ghana
+    //degus mios
     Log.d("SEGUI", "Mi ubicación REAL = $miUbi")
     Log.d("SEGUI", "Ubicación usuario = $ubiUser")
 
