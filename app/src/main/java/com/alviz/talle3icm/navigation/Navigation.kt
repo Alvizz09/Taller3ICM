@@ -1,5 +1,6 @@
 package com.alviz.talle3icm.navigation
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
@@ -23,14 +24,13 @@ enum  class Screens {
 
 @Composable
 fun Navigation(
-    userVm: UserAuthViewModel,
-    locVm: LocationViewModel,
     authVm: UserAuthViewModel,
-    MyUsersVm: MyUsersViewModel,
-    fromNotification: Boolean = false,
-    notifName: String? = null,
-    notifLat: Double? = null,
-    notifLon: Double? = null
+    locVm: LocationViewModel,
+    userVm: UserAuthViewModel,
+    myUsersVm: MyUsersViewModel,
+    fromNotification: Boolean,
+    notifName: String?,
+    notifUid: String?
 ) {
     val navController = rememberNavController()
     NavHost(
@@ -43,8 +43,10 @@ fun Navigation(
 
             // se Navegar despues de que LoginScreen esté dibujada
             LaunchedEffect(fromNotification) {
-                if (fromNotification && notifLat != null && notifLon != null && notifName != null) {
-                    navController.navigate("seguimiento/$notifName/$notifLat/$notifLon")
+                if (fromNotification && notifName != null && notifUid != null) {
+                    navController.navigate(
+                        "seguimiento/${Uri.encode(notifName)}/$notifUid"
+                        )
                 }
             }
         }
@@ -54,17 +56,17 @@ fun Navigation(
         }
 
         composable(Screens.Home.name) {
-            LocationScreen(locVm, userVm, MyUsersVm,navController)
+            LocationScreen(locVm, userVm, myUsersVm,navController)
         }
 
         composable(Screens.listaUsers.name) {
-            enabledList(navController, MyUsersVm, locVm)
+            enabledList(navController, myUsersVm, locVm)
         }
 
         composable("seguimiento/{name}/{uid}") { backStackEntry ->
             val name = backStackEntry.arguments?.getString("name") ?: ""
             val uid = backStackEntry.arguments?.getString("uid") ?: ""
-            SeguimientoScreen(name, uid, navController, locVm, authVm, MyUsersVm)
+            SeguimientoScreen(name, uid, navController, locVm, authVm, myUsersVm)
         }
 
     }

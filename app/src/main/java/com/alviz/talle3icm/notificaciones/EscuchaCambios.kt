@@ -71,7 +71,9 @@ class UserAvailabilityService : Service() {
                     val lat = snapshot.child("locActual/lat").getValue(Double::class.java) ?: 0.0
                     val lon = snapshot.child("locActual/lng").getValue(Double::class.java) ?: 0.0
 
+                    // 👇 CAMBIO: ahora también le pasamos el userId al método de notificación
                     sendLocalNotification(
+                        userId = userId,
                         userName = "$userName $lastName".trim(), //le mandamos datos del usuario que esta disponible
                         lat = lat,
                         lon = lon
@@ -103,12 +105,13 @@ class UserAvailabilityService : Service() {
         Log.d(TAG, "Listener agregado correctamente") // para debug mio para ver que cambio
     }
 
-    private fun sendLocalNotification(userName: String, lat: Double, lon: Double) {
+    private fun sendLocalNotification(userId: String, userName: String, lat: Double, lon: Double) {
         Log.d(TAG, "Enviando notificación para: $userName") // para debug mio para ver que cambio
 
         try {
             val notificationHelper = NotificationHelper(applicationContext) // Instanciamos la notificacion
             notificationHelper.showUserAvailableNotification( // mandamos la notificacion
+                userId = userId,
                 userName = userName,
                 lat = lat,
                 lon = lon
@@ -117,8 +120,8 @@ class UserAvailabilityService : Service() {
         } catch (e: Exception) {
             Log.e(TAG, "Error al enviar notificación: ${e.message}")
             e.printStackTrace() // para debug mio para ver que cambio
+            }
         }
-    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -126,5 +129,5 @@ class UserAvailabilityService : Service() {
             usersRef.removeEventListener(it)
         }
         Log.d(TAG, "Servicio Removido")
-    }
+        }
 }

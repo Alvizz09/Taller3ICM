@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -14,6 +15,7 @@ import com.alviz.talle3icm.R
 import com.alviz.talle3icm.notificaciones.MiFirebaseMessagingService.Companion.EXTRA_USER_LAT
 import com.alviz.talle3icm.notificaciones.MiFirebaseMessagingService.Companion.EXTRA_USER_LON
 import com.alviz.talle3icm.notificaciones.MiFirebaseMessagingService.Companion.EXTRA_USER_NAME
+import com.alviz.talle3icm.notificaciones.MiFirebaseMessagingService.Companion.EXTRA_USER_UID
 import com.alviz.talle3icm.notificaciones.MiFirebaseMessagingService.Companion.NOTIFICATION_CHANNEL_ID
 
 class NotificationHelper(private val context: Context) {
@@ -44,13 +46,21 @@ class NotificationHelper(private val context: Context) {
         }
     }
 
-    fun showUserAvailableNotification(userName: String, lat: Double, lon: Double) {
-        Log.d("NOTIF", "Notificación enviada con lat=$lat lon=$lon para $userName")
+    // 👇 CAMBIO: ahora también recibe userId
+    fun showUserAvailableNotification(userId: String, userName: String, lat: Double, lon: Double) {
+        Log.d("NOTIF", "Notificación enviada con lat=$lat lon=$lon para $userName (uid=$userId)")
+
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+
+            // Estos extras siguen estando por si los necesitas en otro lado
             putExtra(EXTRA_USER_NAME, userName)
             putExtra(EXTRA_USER_LAT, lat.toString())
             putExtra(EXTRA_USER_LON, lon.toString())
+
+            // 👇 NUEVO: pasamos también el UID, para navegar a seguimiento/{name}/{uid}
+            putExtra(EXTRA_USER_UID, userId)
+
             putExtra("from_notification", true)
         }
 
@@ -75,7 +85,6 @@ class NotificationHelper(private val context: Context) {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC) // Visible en lockscreen
             .setDefaults(NotificationCompat.DEFAULT_ALL) // Sonido, vibración, luces
             .setSound(defaultSoundUri) // Sonido
-            // Estilo expandido para mostrar más texto
             .setStyle(
                 NotificationCompat.BigTextStyle()
                     .bigText("$userName ahora está disponible. Toca para ver su ubicación en el mapa.")
@@ -83,5 +92,5 @@ class NotificationHelper(private val context: Context) {
             .build()
 
         notificationManager.notify(System.currentTimeMillis().toInt(), notification)
-    }
+        }
 }

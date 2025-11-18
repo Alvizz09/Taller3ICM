@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -15,23 +16,28 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
 class MiFirebaseMessagingService : FirebaseMessagingService() {
-    //Datos para el canal dio mio de notificacion
+
     companion object {
         private const val TAG = "FCMService"
         const val NOTIFICATION_CHANNEL_ID = "Canal_Disponibilidad"
+
         const val EXTRA_USER_NAME = "extra_user_name"
         const val EXTRA_USER_LAT = "extra_user_lat"
         const val EXTRA_USER_LON = "extra_user_lon"
+
+        // 👇 NUEVO: uid del usuario y ruta directa para Navigation
+        const val EXTRA_USER_UID = "extra_user_uid"
+        const val EXTRA_ROUTE = "route"
     }
 
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannel() // Crea el canal de notificación
+        createNotificationChannel()
     }
 
-    override fun onNewToken(token: String) { // es importante obtener el token poke
+    override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.d(TAG, "Nuevo token FCM: $token") //verificar token en consola
+        Log.d(TAG, "Nuevo token FCM: $token")
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
@@ -39,14 +45,20 @@ class MiFirebaseMessagingService : FirebaseMessagingService() {
         Log.d(TAG, "Mensaje recibido de: ${message.from}")
 
         val data = message.data
+
+        // Estos nombres de clave DEBEN coincidir con lo que mandas desde tu backend/Firebase
         val userName = data["userName"] ?: "Usuario"
         val userLat = data["userLat"] ?: "0.0"
         val userLon = data["userLon"] ?: "0.0"
+
+        // 👇 IMPORTANTE: ahora también leemos el UID del usuario disponible
+        val userUid = data["userUid"] ?: ""   // Asegúrate de mandar "userUid" en el payload
 
         showNotification(
             title = "Usuario Disponible",
             message = "$userName ahora está disponible, checkealo!!",
             userName = userName,
+            userUid = userUid,
             lat = userLat,
             lon = userLon
         )
@@ -57,7 +69,7 @@ class MiFirebaseMessagingService : FirebaseMessagingService() {
             val channel = NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
                 "Usuarios Disponibles",
-                NotificationManager.IMPORTANCE_HIGH //para que apareza de una vez en pantalla
+                NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "Notificaciones cuando un usuario se pone disponible"
                 enableLights(true)
@@ -66,17 +78,36 @@ class MiFirebaseMessagingService : FirebaseMessagingService() {
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
             }
 
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
 
-    private fun showNotification(title: String, message: String, userName: String, lat: String, lon: String) {
+    // 👇 CAMBIADO: ahora recibe también userUid
+    private fun showNotification(
+        title: String,
+        message: String,
+        userName: String,
+        userUid: String,
+        lat: String,
+        lon: String
+    ) {
+        // Ruta que COINCIDE con tu NavHost: "seguimiento/{name}/{uid}"
+        val route = "seguimiento/${Uri.encode(userName)}/$userUid"
+
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra(EXTRA_USER_NAME, userName) // Agregar el nombre del usuario
-            putExtra(EXTRA_USER_LAT, lat) // Agregar latitud y longitud
-            putExtra(EXTRA_USER_LON, lon) // Agregar latitud y longitud
+
+            // Extras que ya tenías (por si los sigues usando en otras partes)
+            putExtra(EXTRA_USER_NAME, userName)
+            putExtra(EXTRA_USER_LAT, lat)
+            putExtra(EXTRA_USER_LON, lon)
+
+            // 👇 NUEVO: uid y route correcta para Navigation
+            putExtra(EXTRA_USER_UID, userUid)
+            putExtra(EXTRA_ROUTE, route)
+
             putExtra("from_notification", true)
         }
 
@@ -84,12 +115,14 @@ class MiFirebaseMessagingService : FirebaseMessagingService() {
             this,
             System.currentTimeMillis().toInt(),
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE // Agregar FLAG_IMMUTABLE para Android 12 y versiones anteriores
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION) // sonido de notificacion
+        val defaultSoundUri =
+            RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
             .setContentTitle("$title 📍")
@@ -108,6 +141,6 @@ class MiFirebaseMessagingService : FirebaseMessagingService() {
             )
             .build()
 
-        notificationManager.notify(System.currentTimeMillis().toInt(), notification) // notificacion en el dispositivo
+        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
     }
 }
