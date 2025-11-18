@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
                 UserAuthViewModel(),
                 LocationViewModel(),
                 UserAuthViewModel(),
-                MyUsersViewModel(),
+                UserAuthViewModel.MyUsersViewModel(),
                 fromNotification = fromNotification,
                 notifName = notifName,
                 notifUid = notifUid

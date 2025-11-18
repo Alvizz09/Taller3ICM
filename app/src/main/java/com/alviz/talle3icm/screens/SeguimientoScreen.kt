@@ -12,7 +12,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.core.app.ActivityCompat
 import com.alviz.talle3icm.model.LocationViewModel
-import com.alviz.talle3icm.model.MyUsersViewModel
 import com.alviz.talle3icm.model.UserAuthViewModel
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -28,7 +27,7 @@ fun SeguimientoScreen(
     navController: NavController,
     locVm: LocationViewModel,
     authVm: UserAuthViewModel,
-    myUsersVm: MyUsersViewModel
+    myUsersVm: UserAuthViewModel.MyUsersViewModel
 ) {
     val context = LocalContext.current
 

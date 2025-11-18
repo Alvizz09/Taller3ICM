@@ -54,10 +54,6 @@ class UserAuthViewModel: ViewModel() {
         _user.value = _user.value.copy(lastName = newLastName)
     }
 
-    fun updateId(newId: Int?) {
-        _user.value = _user.value.copy(id = newId)
-    }
-
     fun updateLocActual(newLoc: LatLng) {
         _user.value = _user.value.copy(
             lat = newLoc.latitude,

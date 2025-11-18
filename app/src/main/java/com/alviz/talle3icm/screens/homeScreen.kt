@@ -140,6 +140,7 @@ fun LocationScreen(locVm: LocationViewModel = viewModel(), userVm: UserAuthViewM
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaMapa(viewModel: LocationViewModel, userVm: UserAuthViewModel, usersVm: MyUsersViewModel, navController: NavController) {
 
@@ -206,6 +207,7 @@ fun PantallaMapa(viewModel: LocationViewModel, userVm: UserAuthViewModel, usersV
                         icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
                     )
                 }
+            }
             }
         }
     }
