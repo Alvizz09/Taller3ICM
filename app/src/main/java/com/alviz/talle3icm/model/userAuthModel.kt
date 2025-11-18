@@ -139,45 +139,46 @@ class UserAuthViewModel: ViewModel() {
                 }
             })
     }
+    class MyUsersViewModel : ViewModel() {
+        val dbReference = database.getReference("users")
+        val _users = MutableStateFlow(listOf<AuthState>())
+        val users: StateFlow<List<AuthState>> = _users.asStateFlow()
 
+        private fun DataSnapshot.doubleAt(path: String): Double? {
+            val v = child(path).value ?: return null
+            return (v as? Number)?.toDouble() ?: v.toString().toDoubleOrNull()
+        }
 
-class MyUsersViewModel : ViewModel() {
-    val dbReference = database.getReference("users")
-    val _users = MutableStateFlow(listOf<AuthState>())
-    val users: StateFlow<List<AuthState>> = _users.asStateFlow()
+        var vel: ValueEventListener =
+            dbReference.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val updatedList = snapshot.children.mapNotNull { c ->
 
-    private fun DataSnapshot.doubleAt(path: String): Double? {
-        val v = child(path).value ?: return null
-        return (v as? Number)?.toDouble() ?: v.toString().toDoubleOrNull()
-    }
+                        val uid = c.key ?: return@mapNotNull null
 
-    var vel: ValueEventListener =
-        dbReference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val updatedList = snapshot.children.mapNotNull { c ->
+                        val name = c.child("name").getValue(String::class.java) ?: ""
+                        val lastName = c.child("lastName").getValue(String::class.java) ?: ""
+                        val status = c.child("status").getValue(String::class.java) ?: ""
+                        val contactImageUrl = c.child("contactImageUrl").getValue(String::class.java)
 
-                    val uid = c.key ?: return@mapNotNull null
+                        val lat = c.doubleAt("locActual/lat")
+                        val lon = c.doubleAt("locActual/lng")
 
-                    val name = c.child("name").getValue(String::class.java) ?: ""
-                    val lastName = c.child("lastName").getValue(String::class.java) ?: ""
-                    val status = c.child("status").getValue(String::class.java) ?: ""
-
-                    val lat = c.doubleAt("locActual/lat")
-                    val lon = c.doubleAt("locActual/lng")
-
-                    AuthState(
-                        id = uid,
-                        name = name,
-                        lastName = lastName,
-                        status = status,
-                        lat = lat,
-                        lon = lon
-                    )
+                        AuthState(
+                            id = uid,
+                            name = name,
+                            lastName = lastName,
+                            status = status,
+                            lat = lat,
+                            lon = lon,
+                            contactImageUrl = contactImageUrl
+                        )
+                    }
+                    _users.value = updatedList
                 }
-                _users.value = updatedList
-            }
 
                 override fun onCancelled(error: DatabaseError) {
+                    Log.e("MyUsersViewModel", "Error al cargar usuarios: ${error.message}")
                 }
             })
     }
