@@ -7,11 +7,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.alviz.talle3icm.model.LocationViewModel
-import com.alviz.talle3icm.model.MyUsersViewModel
+import com.alviz.talle3icm.model.UserAuthViewModel.MyUsersViewModel
 import com.alviz.talle3icm.model.UserAuthViewModel
 import com.alviz.talle3icm.screens.LocationScreen
 import com.alviz.talle3icm.screens.LoginScreen
 import com.alviz.talle3icm.screens.PantallaRegistro
+import com.alviz.talle3icm.screens.ProfileScreen
 import com.alviz.talle3icm.screens.SeguimientoScreen
 import com.alviz.talle3icm.screens.enabledList
 
@@ -19,7 +20,8 @@ enum  class Screens {
     Login,
     Home,
     Register,
-    listaUsers
+    listaUsers,
+    Profile
 }
 
 @Composable
@@ -33,12 +35,9 @@ fun Navigation(
     notifUid: String?
 ) {
     val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = Screens.Login.name
-    ) {
+    NavHost(navController =navController, startDestination = Screens.Login.name){
 
-        composable(Screens.Login.name) {
+        composable(route = Screens.Login.name){
             LoginScreen(navController)
 
             // se Navegar despues de que LoginScreen esté dibujada
@@ -67,6 +66,9 @@ fun Navigation(
             val name = backStackEntry.arguments?.getString("name") ?: ""
             val uid = backStackEntry.arguments?.getString("uid") ?: ""
             SeguimientoScreen(name, uid, navController, locVm, authVm, myUsersVm)
+        }
+        composable(route = Screens.Profile.name){
+            ProfileScreen()
         }
 
     }

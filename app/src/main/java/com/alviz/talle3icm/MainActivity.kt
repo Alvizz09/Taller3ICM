@@ -9,16 +9,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import com.alviz.talle3icm.model.LocationViewModel
-import com.alviz.talle3icm.model.MyUsersViewModel
 import com.alviz.talle3icm.model.UserAuthViewModel
 import com.alviz.talle3icm.navigation.Navigation
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.database
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.storage
 
 val firebaseAuth = FirebaseAuth.getInstance()
 val database = Firebase.database
 val PATH_USERS = "users/"
+
 
 class MainActivity : ComponentActivity() {
 
@@ -65,3 +67,4 @@ class MainActivity : ComponentActivity() {
             }
         }
 }
+

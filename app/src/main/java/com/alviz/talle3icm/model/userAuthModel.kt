@@ -1,6 +1,7 @@
 package com.alviz.talle3icm.model
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.alviz.talle3icm.database
 import com.google.android.gms.maps.model.LatLng
@@ -19,7 +20,7 @@ data class AuthState(
     val password: String = "",
     val name: String = "",
     val lastName: String = "",
-    val contactImage: Uri? = null,
+    var contactImageUrl : String? = null,
     val id: String? = null,
     val lat: Double? = 0.0,
     val lon: Double? = 0.0,
@@ -30,6 +31,12 @@ class UserAuthViewModel: ViewModel() {
 
     val _user = MutableStateFlow<AuthState>(AuthState())
     val user = _user
+
+    var contactImageUri = MutableStateFlow<Uri?>(null)
+
+    fun setContactImage(uri: Uri?) {
+        contactImageUri.value = uri
+    }
 
     fun updateEmail(newEmail: String) {
         _user.value = _user.value.copy(email = newEmail)
@@ -47,12 +54,9 @@ class UserAuthViewModel: ViewModel() {
         _user.value = _user.value.copy(lastName = newLastName)
     }
 
-    /*  fun updateContactImage(newContactImage: Uri?) {
-         _user.value = _user.value.copy(contactImage = newContactImage)
-     }
-
-    */
-
+    fun updateId(newId: Int?) {
+        _user.value = _user.value.copy(id = newId)
+    }
 
     fun updateLocActual(newLoc: LatLng) {
         _user.value = _user.value.copy(
@@ -85,7 +89,60 @@ class UserAuthViewModel: ViewModel() {
             .updateChildren(updates)
 
     }
+
+    fun uploadContactImage(onResult: (String?) -> Unit) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val uri = contactImageUri.value ?: return
+
+        val storageRef = com.google.firebase.storage.FirebaseStorage
+            .getInstance()
+            .reference
+            .child("profile_images/$uid.jpg")
+
+        val uploadTask = storageRef.putFile(uri)
+
+        uploadTask
+            .addOnSuccessListener {
+                storageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                    onResult(downloadUri.toString())
+                }.addOnFailureListener { onResult(null) }
+            }
+            .addOnFailureListener {
+                onResult(null)
+            }
+
+
 }
+    fun updateContactImageUrl(url: String) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        val updates = mapOf("contactImageUrl" to url)
+        FirebaseDatabase.getInstance()
+            .getReference("users")
+            .child(uid)
+            .updateChildren(updates)
+    }
+
+    fun loadUserData() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        FirebaseDatabase.getInstance()
+            .getReference("users")
+            .child(uid)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val userData = snapshot.getValue(AuthState::class.java)
+                    if (userData != null) {
+                        _user.value = userData
+
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("UserAuthViewModel", "Error al cargar datos: ${error.message}")
+                }
+            })
+    }
 
 
 class MyUsersViewModel : ViewModel() {
@@ -124,7 +181,13 @@ class MyUsersViewModel : ViewModel() {
                 _users.value = updatedList
             }
 
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
+    }
 }
+
+
+
+
+

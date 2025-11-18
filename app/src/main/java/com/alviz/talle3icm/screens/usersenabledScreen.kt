@@ -25,6 +25,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.alviz.talle3icm.components.DashboardCard
 import com.alviz.talle3icm.firebaseAuth
+import com.alviz.talle3icm.model.UserAuthViewModel.MyUsersViewModel
+import com.alviz.talle3icm.model.UserAuthViewModel
 import com.alviz.talle3icm.model.LocationViewModel
 import com.alviz.talle3icm.model.MyMarker
 import com.alviz.talle3icm.model.MyUsersViewModel
@@ -35,11 +37,12 @@ import com.google.android.gms.maps.model.LatLng
 fun enabledList(navcontroller: NavController,
          viewModel: MyUsersViewModel = viewModel(), locationVm: LocationViewModel) {
     val users by viewModel.users.collectAsState()
+
     val enabled = remember(users) {
         users.filter { it.status.trim() == "Disponible" }
     }
 
-    Scaffold(topBar = { AppTopBar(navcontroller) }) { paddingValues ->
+    Scaffold() { paddingValues ->
 
         if (enabled.isEmpty()) {
             Box(
@@ -79,17 +82,5 @@ fun enabledList(navcontroller: NavController,
         }
     }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AppTopBar(navController: NavController){
-    TopAppBar(
-        title={Text("")},
-        actions = {
-            IconButton(onClick = { firebaseAuth.signOut()
-                navController.navigate(Screens.Login.name){popUpTo(Screens.Login.name){inclusive=true}} },) {
-                Icon(Icons.Filled.ExitToApp, "Log Out")
-            }
-        }
-    )
-}
+
 
