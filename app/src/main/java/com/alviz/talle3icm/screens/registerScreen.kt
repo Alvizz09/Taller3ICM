@@ -69,10 +69,10 @@ fun PantallaRegistro(navController: NavController, model: UserAuthViewModel = vi
 
     val context = LocalContext.current
 
-    // Observar el Uri de la imagen desde el ViewModel
+
     val imageUri = model.contactImageUri.collectAsState().value
 
-    // Estado del permiso - Verificar directamente aquí
+
     var permissionGranted by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(
@@ -82,7 +82,6 @@ fun PantallaRegistro(navController: NavController, model: UserAuthViewModel = vi
         )
     }
 
-    // Launcher para solicitar el permiso
     val requestPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -94,7 +93,7 @@ fun PantallaRegistro(navController: NavController, model: UserAuthViewModel = vi
         }
     }
 
-    // Launcher para seleccionar imagen de la galería
+
     val galleryLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -159,14 +158,14 @@ fun PantallaRegistro(navController: NavController, model: UserAuthViewModel = vi
                 }
             }
 
-            // Botón para seleccionar imagen
+
             OutlinedButton(
                 onClick = {
                     if (permissionGranted) {
-                        // Si ya tiene permiso, abrir galería
+
                         galleryLauncher.launch("image/*")
                     } else {
-                        // Si no tiene permiso, solicitarlo
+
                         requestPermission.launch(Manifest.permission.READ_MEDIA_IMAGES)
                     }
                 },
