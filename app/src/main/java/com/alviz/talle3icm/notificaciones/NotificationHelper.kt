@@ -19,17 +19,17 @@ import com.alviz.talle3icm.notificaciones.MiFirebaseMessagingService.Companion.E
 import com.alviz.talle3icm.notificaciones.MiFirebaseMessagingService.Companion.NOTIFICATION_CHANNEL_ID
 
 class NotificationHelper(private val context: Context) {
-
+    // Obtiene el servicio de notificaciones
     private val notificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-    init {
-        createNotificationChannel()
+    init { // se ejecuta al momento de crear la clase
+        createNotificationChannel() // para la notificacion es necesario crear el canal, aca se crea
     }
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
+            val channel = NotificationChannel(// se crea el canal en donde se enviaran las notificaciones
                 NOTIFICATION_CHANNEL_ID,
                 "Usuarios disponibles",
                 NotificationManager.IMPORTANCE_HIGH
@@ -38,27 +38,26 @@ class NotificationHelper(private val context: Context) {
                 enableLights(true)
                 enableVibration(true)
                 setShowBadge(true)
-                // Esto hace que aparezca como heads-up
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
             }
-
+            //registra el canal en el sistema de notificaciones
             notificationManager.createNotificationChannel(channel)
         }
     }
-
+    //muestra la notificacion local
     fun showUserAvailableNotification(userId: String, userName: String, lat: Double, lon: Double) {
         Log.d("NOTIF", "Notificación enviada con lat=$lat lon=$lon para $userName (uid=$userId)")
-
+        // el intent es el que se encarga de abrir la actividad de seguimiento con los datos del usuario al momento de dar click en la notificacion
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-
+            // se envian los datos necesarios para abrir la pantalla de seguimiento
             putExtra(EXTRA_USER_NAME, userName)
             putExtra(EXTRA_USER_LAT, lat.toString())
             putExtra(EXTRA_USER_LON, lon.toString())
             putExtra(EXTRA_USER_UID, userId)
             putExtra("from_notification", true)
         }
-
+        // para que se ejecute el intent en el momento de dar click en la notificacion
         val pendingIntent = PendingIntent.getActivity(
             context,
             System.currentTimeMillis().toInt(),
@@ -68,7 +67,7 @@ class NotificationHelper(private val context: Context) {
 
         // Sonido predeterminado de notificación
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-
+        // aca se crea la notificacion con los datos anteriores y con lo que va a contener esa notificacion
         val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setContentTitle("Usuario disponible, checkealo!!")
             .setContentText("$userName ahora está disponible")
@@ -85,7 +84,7 @@ class NotificationHelper(private val context: Context) {
                     .bigText("$userName ahora está disponible. Toca para ver su ubicación en el mapa.")
             )
             .build()
-
+        // se manda la notificacion al sistema de notificaciones
         notificationManager.notify(System.currentTimeMillis().toInt(), notification)
         }
 }

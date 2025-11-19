@@ -27,14 +27,14 @@ fun SeguimientoScreen(
     navController: NavController,
     locVm: LocationViewModel,
     authVm: UserAuthViewModel,
-    myUsersVm: UserAuthViewModel.MyUsersViewModel
+    myUsersVm: UserAuthViewModel.MyUsersViewModel //PARAMETROS
 ) {
     val context = LocalContext.current
 
     LaunchedEffect(true) {
-        val client = LocationServices.getFusedLocationProviderClient(context)
+        val client = LocationServices.getFusedLocationProviderClient(context) //
         val request = LocationRequest.Builder(
-            Priority.PRIORITY_HIGH_ACCURACY,
+            Priority.PRIORITY_HIGH_ACCURACY, //SOLICITUD DE ACTUALIZACION CADA 2 SEG
             2000
         ).setWaitForAccurateLocation(true).build()
 
@@ -42,13 +42,13 @@ fun SeguimientoScreen(
             override fun onLocationResult(result: LocationResult) {
                 val loc = result.lastLocation ?: return
                 // Actualiza estado del ViewModel compartido
-                locVm.update(loc.latitude, loc.longitude)
+                locVm.update(loc.latitude, loc.longitude) // GUARDA LA UBI EN EL VIEW MODEL
 
                 authVm.updateLocActual(
-                    LatLng(loc.latitude, loc.longitude))
+                    LatLng(loc.latitude, loc.longitude)) // GUARDA LA UBI ACTUAL EN EL USUARIO PARA ACTUALIZAR
             }
         }
-
+        //PERMSOS DE LOCALIZACION Y ACTUALIZACION
         if (ActivityCompat.checkSelfPermission(
                 context,
                 android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -63,12 +63,12 @@ fun SeguimientoScreen(
     val miUbi = LatLng(state.latitude, state.longitude)
 
     val users by myUsersVm.users.collectAsState()
-
+    //UBICACION DEL USUARIO QUE ESTA DISPONIBLE SEGUN LA NOTIFICACIÓN
     val selectedUser = users.firstOrNull { it.id == userId }
 
     val ubiUser = remember(selectedUser?.lat, selectedUser?.lon) {
         LatLng(
-            selectedUser?.lat ?: 0.0,
+            selectedUser?.lat ?: 0.0, // POR DEFAULT 0,0, SI NO EXISTE
             selectedUser?.lon ?: 0.0
         )
     }
@@ -83,7 +83,7 @@ fun SeguimientoScreen(
     }
     val currentMiUbi by rememberUpdatedState(miUbi)
     val currentUbiUser by rememberUpdatedState(ubiUser)
-    val currentSelectedUser by rememberUpdatedState(selectedUser)
+    val currentSelectedUser by rememberUpdatedState(selectedUser) //MANTIENE VALORES ACTUALIZADOS EN EL LAUNCH
 
     LaunchedEffect(userId) {
 

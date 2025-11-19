@@ -32,12 +32,12 @@ class MiFirebaseMessagingService : FirebaseMessagingService() {
         super.onCreate()
         createNotificationChannel()
     }
-
+    // se ejecuta cada vez que Firebase asigna o actualiza el token del dispositivo
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         Log.d(TAG, "Nuevo token FCM: $token")
     }
-
+    // se ejecuta cada vez que se recibe un mensaje de notificación
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         Log.d(TAG, "Mensaje recibido de: ${message.from}")
